@@ -42,7 +42,7 @@ class JoinView(View):
             return JsonResponse({'Message':'Success'}, status=201)
         
         except ValidationError as error:
-            return JsonResponse({'Message':error.message}, status = 400)
+            return JsonResponse({'Message':error.message}, status=400)
 
         except json.JSONDecodeError:
             return JsonResponse({'Message':'JSONDecodeError'}, status=400)           
@@ -61,7 +61,7 @@ class LoginView(View):
             user = User.objects.get(username = username)
 
             if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-                return JsonResponse({'MESSAGE':'Invalid_User'}, status=401)
+                return JsonResponse({'Message':'Invalid_User'}, status=401)
         
             access_token = jwt.encode({'id': user.id}, settings.SECRET_KEY, settings.ALGORITHM)
 
