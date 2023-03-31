@@ -31,7 +31,7 @@ class ReviewView(View):
             orderd_products = OrderItem.objects.filter(order__user=user, order__order_status=OrderStatusEnum.DELIVERY_COMPLETED.value, product_id=product_id)
 
             if not orderd_products.exists():
-                return JsonResponse({'MESSAGE':'INVALID_REQUEST'}, status=401)
+                return JsonResponse({'Message':'Invalid_Request'}, status=401)
                 
             Review.objects.create(
                 user       = user,
@@ -39,9 +39,9 @@ class ReviewView(View):
                 rating     = rating,
                 product_id = product_id,
             )
-            return JsonResponse({'MESSAGE':'SUCCESS'}, status=200)
+            return JsonResponse({'Message':'Success'}, status=200)
         except KeyError:
-            return JsonResponse({'MESSAGE':'KEY_ERROR'}, status=400)
+            return JsonResponse({'Message':'Key_Error'}, status=400)
 
     def get(self, request, product_id):
         reviews = Review.objects.filter(product_id=product_id)
@@ -52,7 +52,8 @@ class ReviewView(View):
                     'content' : review.content,
                     'rating'  : review.rating,
                     }for review in reviews]
-        return JsonResponse({'RESULTS':results}, status=200)      
+        
+        return JsonResponse({'Results':results}, status=200)      
 
     @login_decorator
     def delete(self, request, product_id, review_id):
@@ -61,7 +62,7 @@ class ReviewView(View):
             review = Review.objects.get(id=review_id, user=user, product=product_id)
 
             review.delete()
-            return JsonResponse({'MESSAGE':'SUCCESS'}, status=204)
+            return JsonResponse({'Message':'Success'}, status=204)
 
         except Review.DoesNotExist:
-            return JsonResponse({'MESSAGE':'INVALID_REVIEW'}, status=401)
+            return JsonResponse({'Message':'Invalid_Review'}, status=401)
