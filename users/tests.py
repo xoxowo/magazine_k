@@ -1,3 +1,5 @@
+import json
+
 from django.test import Client, TestCase
 
 from users.models import User
@@ -8,108 +10,44 @@ class JoinViewTest(TestCase):
         
         User.objects.create(
             id = 1,
-            username = 'user1',
+            username = 'd',
             password = 'cnstlr!',
-            name = '춘식',
-            zip_code = 12345,
-            address_line_1 = '서울광역시 강남구',
-            address_line_2 = 'aaa빌딩',
-            phone_number = '010',
+            name = 'aa',
             email = 'aaa@kakao.com'
             # point = 100000
         )
         
-        User.objects.create(
-            id = 2,
-            username = 'user2',
-            password = 'fkdldjs!',
-            name = '라이언',            
-            zip_code = 12345,
-            address_line_1 = '서울광역시 강남구',
-            address_line_2 = 'aaa빌딩',
-            phone_number = '0101222',
-            email = 'bbb@kakao.com'
-            # point = '100000'
-        )
-    
-    def tearDown(self) :
+    def tearDown(self):
         User.objects.all().delete()
-        
-    def user_join_success_test(self):
+
+    def test_success_login_user(self):
         client = Client()
-        response = client.get('/member/join')
         
-        self.assertEqual(response.json(),
-                         {
-                            'MESSAGE':'SUCCESS'
-                         }
-                         
-                         )
-        self.assertEqual(response.status_code, 201)
+        user = {
+            'username' : 'dddd',
+            'password' : '123Qwe!!',
+            'name' :'dddd',
+            'phone_number' : 8210123456,
+            'email':'aaa@a.net',
+        }
         
-    def user_join_fail_test(self):
+        response = client.post('/member/join', json.dumps(user), content_type='application/json')
+        
+        self.assertEqual(response.json(), {'MESSAGE':'SUCCESS'})
+        self.assertEqual(response.status_code, 201)        
+
+    def test_fail_login_user(self):
         client = Client()
-        response = client.get('/member/join')
+
+        user1 = {
+            'username' : 'dddd',
+            'password' : '123Qwe',
+            'name' :'dd',
+            'phone_number' : 8210123456,
+            'email':'a@a.net',
+        }
         
-        self.assertEqual(response.json(),
-                         {
-                            'MESSAGE':'Already_Registered_User'
-                         })
+        response = client.post('/member/join',  json.dumps(user1), content_type='application/json')
+        
+        self.assertEqual(response.json(),{'MESSAGE':'Invalid password format'})
         self.assertEqual(response.status_code, 400)
-        
-
-class LoginViewTest(TestCase):
-    def setUp(self):
-        client = Client()
-        
-        User.objects.create(
-            id = 1,
-            username = 'user1',
-            password = 'cnstlr!',
-            name = '춘식',
-            zip_code = 12345,
-            address_line_1 = '서울광역시 강남구',
-            address_line_2 = 'aaa빌딩',
-            phone_number = '010',
-            email = 'aaa@kakao.com'
-            # point = 100000
-        )
-        
-        User.objects.create(
-            id = 2,
-            username = 'user2',
-            password = 'fkdldjs!',
-            name = '라이언',            
-            zip_code = 12345,
-            address_line_1 = '서울광역시 강남구',
-            address_line_2 = 'aaa빌딩',
-            phone_number = '0101222',
-            email = 'bbb@kakao.com'
-            # point = '100000'
-        )
-    
-    def tearDown(self) :
-        User.objects.all().delete()
-        
-    def user_login_success_test(self):
-        client = Client()
-        response = client.get('/member/login')
-        
-        self.assertEqual(response.json(),
-                         {
-                            'MESSAGE':'SUCCESS',
-                            'AUTHORIZATION': 'access_token'
-                         }                         
-                         )
-        self.assertEqual(response.status_code, 200)
-
-    def user_login_fail_test(self):
-        client = Client()
-        response = client.get('/member/login')
-        
-        self.assertEqual(response.json(),
-                         {
-                            'MESSAGE':'INVALID_USER'
-                         }
-                         )
-        self.assertEqual(response.status_code, 401)
