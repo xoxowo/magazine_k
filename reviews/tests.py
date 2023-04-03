@@ -1,5 +1,3 @@
-import json
-
 from django.test import Client, TestCase
 
 from .models import Review
@@ -7,8 +5,7 @@ from users.models import User
 from products.models import Category,Product,ProductImage
 
 class ReviewTest(TestCase):
-    def setUp(self) -> None:
-        client = Client()
+    def setUp(self):
         
         User.objects.create(
             id = 1,
@@ -71,39 +68,33 @@ class ReviewTest(TestCase):
         Review.objects.create(
             id = 2,
             user_id = 1,
-            product_id =1,
+            product_id =2,
             content="책의 내용이 아주 흥미로워요",
             rating=4
         )
     
     
-    def tearDown(self) -> None:
+    def tearDown(self):
         User.objects.all().delete()
         Category.objects.all().delete()
         Product.objects.all().delete()
         Review.objects.all().delete()
         
     
-    def product_review_view_test(self):
+    def test_product_review_view(self):
         client = Client()
         response = client.get('/products/<int:product_id>/reviews')
         
         self.assertEqual(response.json(),
                         {
-                            'Results': {
+                            'Results': 
                                 {
                                 'review'  : 1,
-                                'username': "춘식",
+                                'username': "user1",
                                 'content' : "구매한 책 아주 마음에 들어요.",
                                 'rating'  : 5,
-                                },
-                                {
-                                'review'  : 2,
-                                'username': "춘식",
-                                'content' : "책의 내용이 아주 흥미로워요",
-                                'rating'  : 4,
-                                }, 
-                            }   
+                                }
+  
                         }
                         )
         self.assertEqual(response.status_code, 200)
