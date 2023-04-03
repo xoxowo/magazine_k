@@ -16,6 +16,9 @@ class JoinViewTest(TestCase):
             email = 'aaa@kakao.com'
             # point = 100000
         )
+        
+    def tearDown(self):
+        User.objects.all().delete()
 
     def test_success_login_user(self):
         client = Client()
