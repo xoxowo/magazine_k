@@ -18,8 +18,31 @@ class JoinViewTest(TestCase):
         )
     
     def tearDown(self) :
-        User.objects.all().delete()
+        User.objects.all().delete()    
         
+    def test_success_login_user(self):
+        client = Client()
+        
+        user = {
+            'username' : 'dddd',
+            'password' : '123Qwe!!',
+            'name' :'dddd',
+            'phone_number' : 8210123456,
+            'email':'aaa@a.net',
+        }
+        
+        response = client.post('/member/join', json.dumps(user), content_type='application/json')
+        
+        self.assertEqual(response.json(), {'MESSAGE':'SUCCESS'})
+        self.assertEqual(response.status_code, 201)        
+
+    def test_fail_login_user(self):
+        client = Client()
+
+        
+    def tearDown(self):
+        User.objects.all().delete()
+
     def test_success_login_user(self):
         client = Client()
         
