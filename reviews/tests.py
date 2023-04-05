@@ -76,8 +76,8 @@ class ReviewTest(TransactionTestCase):
         header  = {'HTTP_Authorization' : token}
         
         body = {
-                "content":"this is very nice",
-                "rating" :"5.0"
+                "content":"dfsee",
+                "rating" :"3.0"
                 }
 
         response = client.post('/products/1/reviews', json.dumps(body), content_type='application/json', **header)
