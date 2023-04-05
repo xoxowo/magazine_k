@@ -1,18 +1,22 @@
 import json
+import jwt
 
-from django.test import Client, TestCase
+from django.test import Client, TestCase, TransactionTestCase
+from unittest.mock import patch
 
 from .models import Review
 from users.models import User
 from products.models import Category,Product,ProductImage
 
-class ReviewTest(TestCase):
+from my_settings import ALGORITHM,SECRET_KEY;
+
+class ReviewTest(TransactionTestCase):
     def setUp(self):
         
         User.objects.create(
             id = 1,
-            username = 'd',
-            password = 'cnstlr!',
+            username = 'ddd',
+            password = '123Qwe!!',
             name = 'aa',
             email = 'aaa@kakao.com'
             # point = 100000
@@ -61,5 +65,22 @@ class ReviewTest(TestCase):
                        {'Results': [{'content': 'this is very nice',
                                      'rating': '5.0',
                                      'review': 1,
-                                     'username': 'd'}]})
+                                     'username': 'ddd'}]})
         self.assertEqual(response.status_code, 200)
+        
+    def test_fali_product_review_post_view(self):
+
+        payload = {'id' : User.objects.get(id=1).id}
+        token   = jwt.encode(payload, SECRET_KEY, ALGORITHM)
+        client  = Client()
+        header  = {'HTTP_Authorization' : token}
+        
+        body = {
+                "content":"this is very nice",
+                "rating" :"5.0"
+                }
+
+        response = client.post('/products/1/reviews', json.dumps(body), content_type='application/json', **header)
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json(),{'Message': 'Invalid_Request'})
