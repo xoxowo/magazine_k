@@ -7,6 +7,7 @@ class Review(TimeStampModel):
     product = models.ForeignKey('products.product', on_delete=models.CASCADE)
     content = models.TextField(blank=True)
     rating  = models.DecimalField(max_digits=2, decimal_places=1, null=True)
+    photo_url = models.URLField(max_length=500, null=True)
 
     class Meta: 
         db_table = 'reviews'
