@@ -55,7 +55,14 @@ class ReviewView(View):
                 photo_url = "https://magazine-k.s3.ap-northeast-2.amazonaws.com/"+url
             )
             
-            self.s3_client.upload_fileobj(filename, AWS_STORAGE_BUCKET_NAME, url)
+            self.s3_client.upload_fileobj(
+                filename,
+                AWS_STORAGE_BUCKET_NAME,
+                url,
+                 ExtraArgs={
+                "ContentType": filename.content_type,
+                },
+            )
             
             
             return JsonResponse({'Message':'Success'}, status=200)
