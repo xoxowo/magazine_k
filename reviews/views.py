@@ -37,7 +37,7 @@ class ReviewView(View):
     @login_decorator
     def post(self, request, product_id):
         try:
-            data     = json.loads(request.POST.get('data'))
+            data     = request.POST
             user     = request.user
             content  = data['content']
             rating   = data['rating']
@@ -59,28 +59,29 @@ class ReviewView(View):
             self.s3_client.upload_fileobj(
                 filename,
                 AWS_STORAGE_BUCKET_NAME,
-                url,
-                ExtraArgs={
-                "ContentType": filename.content_type,
-                },
+                url
             )
             
-            
-            return JsonResponse({'Message':'Success'}, status=200)
+            return JsonResponse({'Message':'Success'}, status=201)
         except KeyError:
             return JsonResponse({'Message':'Key_Error'}, status=400)
 
     def get(self, request, product_id):
-        reviews = Review.objects.filter(product_id=product_id)
-    
-        results = [{
-                    'review'  : review.id,
-                    'username': review.user.username,
-                    'content' : review.content,
-                    'rating'  : review.rating,
-                    }for review in reviews]
+        try:
+           
+            reviews = Review.objects.filter(product_id=product_id)
+
+            results = [{
+                        'review'  : review.id,
+                        'username': review.user.username,
+                        'content' : review.content,
+                        'rating'  : review.rating,
+                        'photo'   : review.photo_url,
+                        }for review in reviews]
+            return JsonResponse({'Results':results}, status=200) 
         
-        return JsonResponse({'Results':results}, status=200)      
+        except Product.DoesNotExist:
+            return JsonResponse({'MESSAGE':'Invalid_Request'}, status=404)         
 
     @login_decorator
     def delete(self, request, product_id, review_id):
