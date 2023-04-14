@@ -15,21 +15,18 @@ AWS_REGION = AWS_REGION
 AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
 AWS_QUERYSTRING_AUTH = False
+
 #S3 Storages
 AWS_STORAGE_BUCKET_NAME = AWS_STORAGE_BUCKET_NAME
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.%s.amazonaws.com' % (AWS_STORAGE_BUCKET_NAME,AWS_REGION)
-AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',
-}
 
- # Static Setting
-STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
+# Static Setting
+# STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
 STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
 #Media Setting
-MEDIA_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
+# MEDIA_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-
 
 
 ALLOWED_HOSTS = ['*']

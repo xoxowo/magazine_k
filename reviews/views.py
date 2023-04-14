@@ -6,7 +6,6 @@ from enum                       import Enum
 
 from django.views               import View
 from django.http                import JsonResponse
-from django.db             import transaction
 
 from core.utils.login_decorator import login_decorator
 
@@ -24,6 +23,8 @@ class OrderStatusEnum(Enum):
     DELIVERY_COMPLETED     = 5
     EXCHANGE               = 6
     RETURN                 = 7
+
+
 
 class ReviewView(View):
     
@@ -59,7 +60,7 @@ class ReviewView(View):
                 filename,
                 AWS_STORAGE_BUCKET_NAME,
                 url,
-                 ExtraArgs={
+                ExtraArgs={
                 "ContentType": filename.content_type,
                 },
             )
