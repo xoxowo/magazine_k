@@ -47,23 +47,29 @@ class ReviewView(View):
 
             if not orderd_products.exists():
                 return JsonResponse({'Message':'Invalid_Request'}, status=401)
-                
-            Review.objects.create(
-                user       = user,
-                content    = content,
-                rating     = rating,
-                product_id = product_id,
-                photo_url = "https://magazine-k.s3.ap-northeast-2.amazonaws.com/"+url
-            )
             
             if filename != None :
+                Review.objects.create(
+                    user       = user,
+                    content    = content,
+                    rating     = rating,
+                    product_id = product_id
+                )
+            else:
+                Review.objects.create(
+                    user       = user,
+                    content    = content,
+                    rating     = rating,
+                    product_id = product_id,
+                    photo_url = "https://magazine-k.s3.ap-northeast-2.amazonaws.com/"+url
+                )
                 self.s3_client.upload_fileobj(
                     filename,
                     AWS_STORAGE_BUCKET_NAME,
                     url
                 )
-            
-            return JsonResponse({'Message':'Success', 'filename':filename}, status=201)
+                                         
+            return JsonResponse({'Message':'Success'}, status=201)
         except KeyError:
             return JsonResponse({'Message':'Key_Error'}, status=400)
 
