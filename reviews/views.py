@@ -41,7 +41,7 @@ class ReviewView(View):
             user     = request.user
             content  = data['content']
             rating   = data['rating']
-            filename = request.FILES['filename']
+            filename = request.FILES.get('filename')
             url      = str(uuid.uuid4())
             orderd_products = OrderItem.objects.filter(order__user=user, order__order_status=OrderStatusEnum.DELIVERY_COMPLETED.value, product_id=product_id)
 
@@ -56,19 +56,19 @@ class ReviewView(View):
                 photo_url = "https://magazine-k.s3.ap-northeast-2.amazonaws.com/"+url
             )
             
-            self.s3_client.upload_fileobj(
-                filename,
-                AWS_STORAGE_BUCKET_NAME,
-                url
-            )
+            if filename != None :
+                self.s3_client.upload_fileobj(
+                    filename,
+                    AWS_STORAGE_BUCKET_NAME,
+                    url
+                )
             
-            return JsonResponse({'Message':'Success'}, status=201)
+            return JsonResponse({'Message':'Success', 'filename':filename}, status=201)
         except KeyError:
             return JsonResponse({'Message':'Key_Error'}, status=400)
 
     def get(self, request, product_id):
         try:
-           
             reviews = Review.objects.filter(product_id=product_id)
 
             results = [{
@@ -81,7 +81,7 @@ class ReviewView(View):
             return JsonResponse({'Results':results}, status=200) 
         
         except Product.DoesNotExist:
-            return JsonResponse({'MESSAGE':'Invalid_Request'}, status=404)         
+            return JsonResponse({'Message':'Invalid_Request'}, status=404)         
 
     @login_decorator
     def delete(self, request, product_id, review_id):
