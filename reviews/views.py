@@ -25,7 +25,6 @@ class OrderStatusEnum(Enum):
     RETURN                 = 7
 
 
-
 class ReviewView(View):
     
     s3_client = boto3.client(
@@ -75,20 +74,22 @@ class ReviewView(View):
             return JsonResponse({'Message':'Key_Error'}, status=400)
 
     def get(self, request, product_id):
-        try:
-            reviews = Review.objects.filter(product_id=product_id)
 
-            results = [{
-                        'review'  : review.id,
-                        'username': review.user.username,
-                        'content' : review.content,
-                        'rating'  : review.rating,
-                        'photo'   : review.photo_url,
-                        }for review in reviews]
-            return JsonResponse({'Results':results}, status=200) 
+        reviews = Review.objects.filter(product_id=product_id)
+
+        if not reviews.exists():
+            return JsonResponse({'Message':'Invalid_Request'}, status=401)
         
-        except Product.DoesNotExist:
-            return JsonResponse({'Message':'Invalid_Request'}, status=404)         
+        results = [{
+                    'review'  : review.id,
+                    'username': review.user.username,
+                    'content' : review.content,
+                    'rating'  : review.rating,
+                    'photo'   : review.photo_url,
+                    }for review in reviews]
+        
+        return JsonResponse({'Results':results}, status=200) 
+
 
     @login_decorator
     def delete(self, request, product_id, review_id):
